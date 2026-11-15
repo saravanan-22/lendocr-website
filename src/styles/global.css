@@ -18,7 +18,7 @@
   --code-bg: #0f1b2d;
   --code-text: #e6edf5;
   --radius: 12px;
-  --max: 1120px;
+  --max: 1280px;
   --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
   --font-head: "Plus Jakarta Sans Variable", "Inter Variable", system-ui, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
@@ -158,7 +158,7 @@ section {
 .lead {
   font-size: 1.15rem;
   color: var(--muted);
-  max-width: 46rem;
+  max-width: 46rem; /* keep paragraphs at a comfortable reading width */
 }
 
 .eyebrow {
@@ -346,6 +346,91 @@ a.card:hover {
   padding: 4.5rem 0 3.5rem;
   background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg) 100%);
   border-bottom: 1px solid var(--border);
+}
+
+.hero-grid {
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.hero-grid > * {
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1.15fr 1fr;
+    gap: 3.5rem;
+  }
+}
+
+.hero-sample {
+  margin: 0;
+  position: relative;
+  padding-bottom: 5.5rem;
+}
+
+.hero-sample img {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(15, 27, 45, 0.08);
+  width: 88%;
+}
+
+.hero-result {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 68%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 40px rgba(15, 27, 45, 0.14);
+  padding: 1rem 1.1rem;
+  font-size: 0.92rem;
+}
+
+.hero-result-head {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+
+.hero-result dl {
+  margin: 0;
+}
+
+.hero-result dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.hero-result dt {
+  color: var(--muted);
+}
+
+.hero-result dd {
+  margin: 0;
+  text-align: right;
+}
+
+@media (max-width: 600px) {
+  .hero-sample {
+    padding-bottom: 0;
+  }
+  .hero-sample img {
+    width: 100%;
+  }
+  .hero-result {
+    position: static;
+    width: 100%;
+    margin-top: -1.5rem;
+  }
 }
 
 .hero .points {

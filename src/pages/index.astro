@@ -1,8 +1,11 @@
 ---
 import Base from "../layouts/Base.astro";
 import Demo from "../components/Demo.astro";
+import { DEMO } from "../data/demo";
 import { DOCUMENTS } from "../data/documents";
 import { SITE, link, mailto } from "../config";
+
+const hero = DEMO.find((d) => d.id === "pan");
 
 const faqs = [
   {
@@ -69,24 +72,48 @@ const jsonLd = [
   jsonLd={jsonLd}
 >
   <section class="hero">
-    <div class="wrap">
-      <p class="eyebrow">Document OCR API for Indian lending</p>
-      <h1>Read KYC and loan documents into checked, ready-to-use data</h1>
-      <p class="lead">
-        Send a photo or PDF of a PAN, Aadhaar, bank statement, cheque, bill, ITR or salary slip. Get
-        back structured JSON in under a second, every field validated, and a clear flag when a person
-        should take a look.
-      </p>
-      <div class="actions">
-        <a class="btn primary" href={mailto("API key request", "Company:\nUse case:\nExpected documents per month:")}>Get a free test key</a>
-        <a class="btn secondary" href="#demo">See real output</a>
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Document OCR API for Indian lending</p>
+        <h1>Read KYC and loan documents into checked, ready-to-use data</h1>
+        <p class="lead">
+          Send a photo or PDF of a PAN, Aadhaar, bank statement, cheque, bill, ITR or salary slip. Get
+          back structured JSON in under a second, every field validated, and a clear flag when a person
+          should take a look.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href={mailto("API key request", "Company:\nUse case:\nExpected documents per month:")}>Get a free test key</a>
+          <a class="btn secondary" href="#demo">See real output</a>
+        </div>
+        <ul class="points">
+          <li>14 Indian document types</li>
+          <li>Checksums and cross-checks</li>
+          <li>Documents not stored</li>
+          <li>Your cloud or ours</li>
+        </ul>
       </div>
-      <ul class="points">
-        <li>14 Indian document types</li>
-        <li>Checksums and cross-checks</li>
-        <li>Documents not stored</li>
-        <li>Your cloud or ours</li>
-      </ul>
+      {
+        hero && (
+          <figure class="hero-sample" aria-label="Example: a PAN card and the data LendOCR returns">
+            <img src={link(hero.image)} alt="Sample PAN card (synthetic specimen)" width={hero.width} height={hero.height} />
+            <div class="hero-result">
+              <div class="hero-result-head">
+                <span class="badge">{hero.response.document_type}</span>
+                <span class="badge ok">no review needed</span>
+                <span class="note">{hero.response.processing_ms} ms</span>
+              </div>
+              <dl>
+                {Object.entries(hero.response.fields).map(([k, f]) => (
+                  <div>
+                    <dt>{k.replaceAll("_", " ")}</dt>
+                    <dd><code>{f.value}</code></dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </figure>
+        )
+      }
     </div>
   </section>
 
