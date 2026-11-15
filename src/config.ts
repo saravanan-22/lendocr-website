@@ -13,11 +13,23 @@ export const SITE = {
   apiBase: "https://api.lendocr.com",
 };
 
+// The person behind LendOCR (shown on the About page).
+export const FOUNDER = {
+  name: "Saravanan R",
+  role: "Founder and developer",
+  title: "Full-stack developer, FinTech and digital lending",
+  location: "Tiruppur, Tamil Nadu, India",
+  linkedin: "https://www.linkedin.com/in/saravanan-webdeveloper/",
+  github: "https://github.com/saravanan-22",
+  portfolio: "https://saravanan-22.github.io/",
+};
+
 export const NAV = [
   { href: "documents/", label: "Documents" },
   { href: "developers/", label: "Developers" },
   { href: "security/", label: "Security" },
   { href: "pricing/", label: "Pricing" },
+  { href: "about/", label: "About" },
 ];
 
 // Prefix internal links with the configured base path (works on a custom domain or a

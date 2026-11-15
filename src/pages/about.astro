@@ -1,0 +1,175 @@
+---
+import Base from "../layouts/Base.astro";
+import { FOUNDER, SITE, link, mailto } from "../config";
+
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: FOUNDER.name,
+  jobTitle: FOUNDER.title,
+  homeLocation: FOUNDER.location,
+  url: FOUNDER.portfolio,
+  sameAs: [FOUNDER.linkedin, FOUNDER.github, FOUNDER.portfolio],
+  worksFor: { "@type": "Organization", name: SITE.name, url: SITE.url },
+};
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: `About ${SITE.name}`,
+    mainEntity: { "@type": "Organization", name: SITE.name, url: SITE.url, founder: person },
+  },
+  person,
+];
+const stack = [
+  ["OCR", "RapidOCR (PP-OCR) for speed, PaddleOCR-VL for hard documents, served with vLLM on GPU"],
+  ["API", "Python, FastAPI, PostgreSQL job queue, signed webhooks"],
+  ["Checks", "Our own validators for Aadhaar, PAN, GSTIN, IFSC, MICR, DL, passport MRZ and more"],
+  ["Operations", "Docker, nginx load balancing, Prometheus and Grafana monitoring"],
+];
+---
+
+<Base
+  title="About LendOCR: Who Builds It and Why"
+  description="Why LendOCR exists, who builds it, and how: OCR made for Indian lenders by a developer who has built digital lending software for banks and NBFCs."
+  path="about/"
+  jsonLd={jsonLd}
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / About</p>
+      <h1>About LendOCR</h1>
+      <p class="lead">
+        LendOCR turns the documents lenders collect into data they can trust, without people retyping
+        them and without keeping customers' documents.
+      </p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap grid two" style="align-items:start">
+      <div>
+        <h2>Why we built it</h2>
+        <p>
+          In Indian lending, staff still type PAN numbers, Aadhaar details, cheque details and bank
+          statement figures into loan systems by hand. It is slow, and typing mistakes surface later as
+          rejected applications or bad loans.
+        </p>
+        <p>
+          General OCR tools return text, not answers. A lender needs to know that an Aadhaar number
+          passes its checksum, that a salary slip adds up, that a bill is recent enough, and that a bank
+          statement has not been edited. LendOCR does those checks and says plainly when a person should
+          look.
+        </p>
+        <p>
+          Customer documents are sensitive, so the product keeps as little as possible: documents are
+          not stored, Aadhaar is always masked, and banks can run it on their own servers.
+        </p>
+      </div>
+      <div class="card">
+        <h2 style="font-size:1.25rem">What we believe</h2>
+        <ul class="checks">
+          <li>Check the data, don't just read it</li>
+          <li>Tell people when to review, and why</li>
+          <li>Measure accuracy openly; never guess it</li>
+          <li>Keep customers' documents for as short a time as possible</li>
+          <li>Be simple to integrate: one API, clear errors</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap">
+      <p class="eyebrow">The developer</p>
+      <div class="founder card">
+        <div class="avatar" aria-hidden="true">SR</div>
+        <div>
+          <h2>{FOUNDER.name}</h2>
+          <p class="founder-role">{FOUNDER.role} · {FOUNDER.location}</p>
+          <p>
+            Saravanan is a full-stack developer with over two years of experience building a digital
+            lending platform used by banks, finance companies and their partner agents: loan
+            applications, KYC document checks, credit appraisal reports, approvals, accounting and the
+            full loan lifecycle. That work, including connecting a lending platform to document-reading
+            services, showed what lenders actually need from OCR.
+          </p>
+          <p>
+            He designed and built LendOCR end to end: the OCR pipeline, the validators for each Indian
+            document, bank statement analysis, the API with keys and usage limits, background jobs and
+            webhooks, and the infrastructure to run it reliably.
+          </p>
+          <p class="founder-links">
+            <a href={FOUNDER.linkedin} rel="me noopener" target="_blank">LinkedIn</a>
+            <a href={FOUNDER.github} rel="me noopener" target="_blank">GitHub</a>
+            <a href={FOUNDER.portfolio} rel="me noopener" target="_blank">Portfolio</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>How it is built</h2>
+      <p class="lead">Proven open-source models, our own checks on top, and careful engineering around them.</p>
+      <div class="table-wrap">
+        <table>
+          <tbody>{stack.map(([area, what]) => <tr><th scope="row">{area}</th><td>{what}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <div class="actions">
+        <a class="btn primary" href={mailto("Hello from the About page")}>Get in touch</a>
+        <a class="btn secondary" href={link("security/")}>How we handle data</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .founder {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.75rem;
+  }
+  @media (min-width: 720px) {
+    .founder {
+      grid-template-columns: auto 1fr;
+    }
+  }
+  .founder > * {
+    min-width: 0;
+  }
+  .avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.8rem;
+  }
+  .founder h2 {
+    margin-bottom: 0.15rem;
+  }
+  .founder p {
+    color: var(--text);
+    margin: 0 0 0.85rem;
+    max-width: 72ch;
+  }
+  .founder-role {
+    color: var(--muted) !important;
+    margin-bottom: 1rem;
+  }
+  .founder-links {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+    margin: 0;
+    font-weight: 600;
+  }
+</style>

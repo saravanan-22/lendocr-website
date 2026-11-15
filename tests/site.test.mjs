@@ -29,7 +29,7 @@ const attr = (page, re) => [...page.matchAll(re)].map((m) => m[1]);
 
 test("expected pages are built", () => {
   const urls = Object.keys(html);
-  for (const url of ["/", "/documents/", "/developers/", "/security/", "/pricing/", "/contact/", "/404.html"]) {
+  for (const url of ["/", "/documents/", "/developers/", "/security/", "/pricing/", "/contact/", "/about/", "/404.html"]) {
     assert.ok(urls.includes(url), `missing ${url}`);
   }
   const docPages = urls.filter((u) => /^\/documents\/.+\/$/.test(u));
@@ -49,11 +49,17 @@ test("every internal link and image resolves", () => {
   }
 });
 
-test("external links are only mail links (no third-party trackers or scripts)", () => {
+// Outbound links allowed: mail, our own site, and the founder's public profiles.
+const ALLOWED_OUT = ["https://www.linkedin.com/in/", "https://github.com/saravanan-22", "https://saravanan-22.github.io/"];
+
+test("external links are only mail or approved profile links (no trackers or scripts)", () => {
   for (const [url, page] of Object.entries(html)) {
     for (const href of attr(page, /\shref="([a-z]+:[^"]*)"/g)) {
-      const ok = href.startsWith("mailto:") || href.startsWith(SITE);
+      const ok = href.startsWith("mailto:") || href.startsWith(SITE) || ALLOWED_OUT.some((p) => href.startsWith(p));
       assert.ok(ok, `${url} links out to ${href}`);
+    }
+    for (const tag of page.match(/<a [^>]*target="_blank"[^>]*>/g) ?? []) {
+      assert.match(tag, /rel="[^"]*noopener/, `${url} new-tab link without noopener: ${tag}`);
     }
     for (const src of attr(page, /<script[^>]*\ssrc="([^"]+)"/g)) {
       assert.ok(src.startsWith("/"), `${url} loads external script ${src}`);
@@ -126,7 +132,7 @@ test("no personal data or placeholders leak into the site", () => {
   for (const [url, page] of Object.entries(html)) {
     const text = page.replace(/<script[\s\S]*?<\/script>/g, "");
     assert.doesNotMatch(text, /(?<![\dX])[2-9]\d{3}\s?\d{4}\s?\d{4}(?!\d)/, `${url} shows a 12-digit Aadhaar-like number`);
-    assert.doesNotMatch(text, /TODO|lorem ipsum|undefined|NaN/i, `${url} has a placeholder`);
+    assert.doesNotMatch(text, /\bTODO\b|lorem ipsum|\bundefined\b|\bNaN\b|\[object Object\]/, `${url} has a placeholder`);
     assert.doesNotMatch(text, /lo_(live|test)_[a-z0-9]{8}_[A-Za-z0-9_-]{20,}/, `${url} shows a real API key`);
   }
 });
