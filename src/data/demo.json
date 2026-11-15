@@ -1,0 +1,488 @@
+[
+  {
+    "id": "pan",
+    "title": "PAN card",
+    "image": "demo/pan.webp",
+    "width": 900,
+    "height": 576,
+    "response": {
+      "document_type": "pan",
+      "fields": {
+        "pan": {
+          "value": "ABCPK1234F",
+          "confidence": 1.0
+        },
+        "name": {
+          "value": "RAVI KUMAR",
+          "confidence": 0.992
+        },
+        "fathers_name": {
+          "value": "SURESH KUMAR",
+          "confidence": 0.998
+        },
+        "dob": {
+          "value": "1990-04-12",
+          "confidence": 1.0
+        }
+      },
+      "checks": {
+        "dob_valid": true,
+        "pan_format": true,
+        "name_matches_pan": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 148
+    }
+  },
+  {
+    "id": "aadhaar",
+    "title": "Aadhaar",
+    "image": "demo/aadhaar.webp",
+    "width": 900,
+    "height": 576,
+    "response": {
+      "document_type": "aadhaar",
+      "fields": {
+        "aadhaar_number": {
+          "value": "XXXX XXXX 0124",
+          "confidence": 0.979
+        },
+        "dob": {
+          "value": "1990-04-12",
+          "confidence": 0.999
+        },
+        "name": {
+          "value": "RAVI KUMAR",
+          "confidence": 0.999
+        },
+        "gender": {
+          "value": "male",
+          "confidence": 1.0
+        }
+      },
+      "checks": {
+        "aadhaar_checksum": true,
+        "dob_valid": true,
+        "adult": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 132
+    }
+  },
+  {
+    "id": "bank_statement",
+    "title": "Bank statement",
+    "image": "demo/bank_statement.webp",
+    "width": 778,
+    "height": 583,
+    "response": {
+      "document_type": "bank_statement",
+      "fields": {
+        "account_number": {
+          "value": "32145678901",
+          "confidence": 1.0
+        },
+        "account_holder": {
+          "value": "RAVI KUMAR",
+          "confidence": 1.0
+        },
+        "ifsc": {
+          "value": "SBIN0001234",
+          "confidence": 1.0
+        },
+        "bank_name": {
+          "value": "State Bank of India",
+          "confidence": 1.0
+        },
+        "period_from": {
+          "value": "2026-08-01",
+          "confidence": 1.0
+        },
+        "period_to": {
+          "value": "2026-10-31",
+          "confidence": 1.0
+        },
+        "opening_balance": {
+          "value": "10000.00",
+          "confidence": 0.99
+        },
+        "closing_balance": {
+          "value": "127772.00",
+          "confidence": 0.99
+        },
+        "transaction_count": {
+          "value": "11",
+          "confidence": 0.99
+        }
+      },
+      "checks": {
+        "has_transactions": true,
+        "balance_continuity": true,
+        "closing_balance_matches": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 2,
+      "processing_ms": 19,
+      "data": {
+        "analysis": {
+          "average_balance": "84915.02",
+          "salary": {
+            "monthly_estimate": "53000.00"
+          },
+          "emi_loan": {
+            "monthly_average": "18500.00"
+          },
+          "bounces": {
+            "count": 1
+          },
+          "balance_check": {
+            "rows_checked": 11,
+            "mismatches": 0,
+            "mismatch_rows": []
+          }
+        },
+        "transactions": [
+          {
+            "date": "2026-08-01",
+            "narration": "NEFT CR ACME TECHNOLOGIES SALARY",
+            "debit": null,
+            "credit": "53000.00",
+            "balance": "63000.00",
+            "category": "salary"
+          },
+          {
+            "date": "2026-08-03",
+            "narration": "NACH DR HDFC BANK HOME LOAN EMI",
+            "debit": "18500.00",
+            "credit": null,
+            "balance": "44500.00",
+            "category": "emi_loan"
+          },
+          {
+            "date": "2026-08-05",
+            "narration": "ATM WDL CHENNAI T NAGAR",
+            "debit": "5000.00",
+            "credit": null,
+            "balance": "39500.00",
+            "category": "atm_withdrawal"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "cheque",
+    "title": "Cheque",
+    "image": "demo/cheque.webp",
+    "width": 900,
+    "height": 443,
+    "response": {
+      "document_type": "cheque",
+      "fields": {
+        "ifsc": {
+          "value": "SBIN0001234",
+          "confidence": 0.984
+        },
+        "bank_name": {
+          "value": "State Bank of India",
+          "confidence": 0.984
+        },
+        "micr_code": {
+          "value": "600002002",
+          "confidence": 0.991
+        },
+        "cheque_number": {
+          "value": "123456",
+          "confidence": 0.991
+        },
+        "micr_account_id": {
+          "value": "001234",
+          "confidence": 0.991
+        },
+        "transaction_code": {
+          "value": "31",
+          "confidence": 0.991
+        },
+        "account_number": {
+          "value": "32145678901",
+          "confidence": 0.974
+        },
+        "account_holder": {
+          "value": "RAVI KUMAR",
+          "confidence": 0.999
+        }
+      },
+      "checks": {
+        "account_number_length": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 171
+    }
+  },
+  {
+    "id": "electricity_bill",
+    "title": "Electricity bill",
+    "image": "demo/electricity_bill.webp",
+    "width": 900,
+    "height": 653,
+    "response": {
+      "document_type": "electricity_bill",
+      "fields": {
+        "provider": {
+          "value": "TAMIL NADU POWER DISTRIBUTION CORPORATION LTD",
+          "confidence": 0.997
+        },
+        "consumer_number": {
+          "value": "04-123-456-789",
+          "confidence": 0.998
+        },
+        "name": {
+          "value": "RAVI KUMAR",
+          "confidence": 0.998
+        },
+        "address": {
+          "value": "12, Gandhi Street, Ram Nagar, Coimbatore - 641009",
+          "confidence": 0.995
+        },
+        "pincode": {
+          "value": "641009",
+          "confidence": 0.995
+        },
+        "bill_date": {
+          "value": "2026-11-01",
+          "confidence": 0.997
+        },
+        "due_date": {
+          "value": "2026-11-15",
+          "confidence": 0.999
+        },
+        "amount_due": {
+          "value": "1234.00",
+          "confidence": 0.972
+        },
+        "units_consumed": {
+          "value": "245",
+          "confidence": 0.997
+        }
+      },
+      "checks": {
+        "amount_valid": true,
+        "due_after_bill": true,
+        "bill_recent": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 181
+    }
+  },
+  {
+    "id": "motor_insurance",
+    "title": "Car insurance",
+    "image": "demo/motor_insurance.webp",
+    "width": 900,
+    "height": 726,
+    "response": {
+      "document_type": "motor_insurance",
+      "fields": {
+        "insurer": {
+          "value": "ICICI Lombard",
+          "confidence": 0.983
+        },
+        "policy_number": {
+          "value": "3001/2345/6789",
+          "confidence": 0.997
+        },
+        "insured_name": {
+          "value": "LAKSHMI DEVI",
+          "confidence": 0.998
+        },
+        "registration_number": {
+          "value": "KA 05 MN 0987",
+          "confidence": 0.984
+        },
+        "make_model": {
+          "value": "MARUTI SUZUKI SWIFT VXI",
+          "confidence": 0.983
+        },
+        "engine_number": {
+          "value": "K12MN1234567",
+          "confidence": 0.997
+        },
+        "chassis_number": {
+          "value": "MA3EZD12S00123456",
+          "confidence": 0.996
+        },
+        "policy_start": {
+          "value": "2026-06-01",
+          "confidence": 0.999
+        },
+        "policy_end": {
+          "value": "2027-05-31",
+          "confidence": 0.999
+        },
+        "idv": {
+          "value": "485000.00",
+          "confidence": 0.99
+        },
+        "premium": {
+          "value": "14250.00",
+          "confidence": 0.983
+        }
+      },
+      "checks": {
+        "registration_format": true,
+        "end_after_start": true,
+        "policy_active": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 220
+    }
+  },
+  {
+    "id": "salary_slip",
+    "title": "Salary slip",
+    "image": "demo/salary_slip.webp",
+    "width": 900,
+    "height": 726,
+    "response": {
+      "document_type": "salary_slip",
+      "fields": {
+        "employer": {
+          "value": "ACME TECHNOLOGIES PRIVATE LIMITED",
+          "confidence": 0.992
+        },
+        "month": {
+          "value": "2026-10",
+          "confidence": 0.996
+        },
+        "employee_name": {
+          "value": "RAVI KUMAR",
+          "confidence": 0.998
+        },
+        "employee_id": {
+          "value": "ACM1042",
+          "confidence": 0.988
+        },
+        "designation": {
+          "value": "Senior Engineer",
+          "confidence": 1.0
+        },
+        "pan": {
+          "value": "ABCPK1234F",
+          "confidence": 0.989
+        },
+        "gross_earnings": {
+          "value": "55000.00",
+          "confidence": 0.999
+        },
+        "total_deductions": {
+          "value": "2000.00",
+          "confidence": 1.0
+        },
+        "net_pay": {
+          "value": "53000.00",
+          "confidence": 0.971
+        },
+        "basic": {
+          "value": "30000.00",
+          "confidence": 1.0
+        },
+        "hra": {
+          "value": "15000.00",
+          "confidence": 1.0
+        },
+        "provident_fund": {
+          "value": "1800.00",
+          "confidence": 1.0
+        },
+        "professional_tax": {
+          "value": "200.00",
+          "confidence": 1.0
+        }
+      },
+      "checks": {
+        "net_equals_gross_minus_deductions": true,
+        "net_within_gross": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 260
+    }
+  },
+  {
+    "id": "itr_v",
+    "title": "ITR-V (password PDF)",
+    "image": "demo/itr_v.webp",
+    "width": 511,
+    "height": 383,
+    "response": {
+      "document_type": "itr_v",
+      "fields": {
+        "pan": {
+          "value": "ABCPK1234F",
+          "confidence": 1.0
+        },
+        "name": {
+          "value": "RAVI KUMAR",
+          "confidence": 1.0
+        },
+        "assessment_year": {
+          "value": "2025-26",
+          "confidence": 1.0
+        },
+        "acknowledgement_number": {
+          "value": "123456789012345",
+          "confidence": 1.0
+        },
+        "itr_form": {
+          "value": "ITR-1",
+          "confidence": 1.0
+        },
+        "filing_date": {
+          "value": "2025-07-28",
+          "confidence": 1.0
+        },
+        "gross_total_income": {
+          "value": "950000.00",
+          "confidence": 1.0
+        },
+        "total_income": {
+          "value": "725000.00",
+          "confidence": 1.0
+        },
+        "tax_payable": {
+          "value": "23400.00",
+          "confidence": 1.0
+        },
+        "taxes_paid": {
+          "value": "25000.00",
+          "confidence": 1.0
+        },
+        "refund": {
+          "value": "1600.00",
+          "confidence": 1.0
+        }
+      },
+      "checks": {
+        "assessment_year_valid": true,
+        "filing_date_in_window": true,
+        "total_within_gross": true
+      },
+      "needs_review": false,
+      "warnings": [],
+      "pages": 1,
+      "processing_ms": 7
+    }
+  }
+]

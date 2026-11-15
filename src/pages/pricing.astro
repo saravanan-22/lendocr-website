@@ -1,0 +1,43 @@
+---
+import Base from "../layouts/Base.astro";
+import { link, mailto } from "../config";
+---
+
+<Base
+  title="Pricing: Pay per Page OCR API"
+  description="LendOCR pricing: free test keys for integration, pay per page in production, and an on-premise licence for banks."
+  path="pricing/"
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Pricing</p>
+      <h1>Pricing</h1>
+      <p class="lead">Start free. Pay for the pages you process. No setup fee.</p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap grid three">
+      <div class="card">
+        <h3>Test</h3>
+        <p><strong>Free</strong></p>
+        <ul class="checks"><li>Every endpoint and document</li><li>Never billed</li><li>For building your integration</li></ul>
+        <a class="btn secondary" href={mailto("Test key request")}>Get a test key</a>
+      </div>
+      <div class="card">
+        <h3>Live</h3>
+        <p><strong>Pay per page</strong></p>
+        <ul class="checks"><li>Volume-based price per page</li><li>Monthly quota you choose</li><li>Background jobs and webhooks</li></ul>
+        <a class="btn primary" href={mailto("Live pricing quote", "Company:\nDocuments per month:\nDocument types:")}>Get a quote</a>
+      </div>
+      <div class="card">
+        <h3>On-premise</h3>
+        <p><strong>Annual licence</strong></p>
+        <ul class="checks"><li>Runs in your data centre or cloud</li><li>Data never leaves your network</li><li>Setup support</li></ul>
+        <a class="btn secondary" href={mailto("On-premise licence")}>Contact us</a>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top:1.5rem">
+      <p class="note">A page is one image, or one page of a PDF. Validation calls (<code>/v1/validate</code>) are not counted as pages.</p>
+    </div>
+  </section>
+</Base>

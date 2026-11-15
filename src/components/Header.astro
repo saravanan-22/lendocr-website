@@ -1,0 +1,23 @@
+---
+import { NAV, SITE, link, mailto } from "../config";
+const current = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href={link()} aria-label={`${SITE.name} home`}>
+      <img src={link("favicon.svg")} alt="" width="28" height="28" />
+      {SITE.name}
+    </a>
+    <nav aria-label="Main">
+      {
+        NAV.map((item) => (
+          <a href={link(item.href)} aria-current={current.startsWith(link(item.href)) ? "page" : undefined}>
+            {item.label}
+          </a>
+        ))
+      }
+      <a class="btn primary" href={mailto("API key request")}>Get an API key</a>
+    </nav>
+  </div>
+</header>

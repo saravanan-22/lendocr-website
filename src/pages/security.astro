@@ -1,0 +1,63 @@
+---
+import Base from "../layouts/Base.astro";
+import { link } from "../config";
+---
+
+<Base
+  title="Security and Data Privacy"
+  description="How LendOCR handles customer documents: no storage on the extract API, masked Aadhaar, encrypted background jobs, hashed API keys, and self-hosting for banks."
+  path="security/"
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Security</p>
+      <h1>Security and data privacy</h1>
+      <p class="lead">
+        Lenders handle Aadhaar, PAN and bank data. LendOCR is designed to keep as little of it as
+        possible, for as short a time as possible.
+      </p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap grid two">
+      <div class="card">
+        <h3>Documents are not stored</h3>
+        <p>On the extract, batch and read APIs, files are processed in memory and dropped. They are never written to disk or logs.</p>
+      </div>
+      <div class="card">
+        <h3>Background jobs are encrypted</h3>
+        <p>Queued files are encrypted with AES-256-GCM and deleted as soon as they are processed. Results stay encrypted for 24 hours, then are erased, or sooner on request.</p>
+      </div>
+      <div class="card">
+        <h3>Aadhaar is always masked</h3>
+        <p>The Aadhaar number is checked with its Verhoeff checksum and only ever returned as XXXX XXXX 1234.</p>
+      </div>
+      <div class="card">
+        <h3>API keys are hashed</h3>
+        <p>We store only a keyed hash of each key, never the key itself. Keys can be limited by scope, revoked instantly and rotated without downtime.</p>
+      </div>
+      <div class="card">
+        <h3>Signed webhooks</h3>
+        <p>Webhooks are signed with HMAC-SHA256 and a timestamp, carry no document data, and only go to public https addresses.</p>
+      </div>
+      <div class="card">
+        <h3>Logs without personal data</h3>
+        <p>Logs and metrics record request ids, timings and counts, never document content or extracted values.</p>
+      </div>
+      <div class="card">
+        <h3>Your own servers</h3>
+        <p>Banks and NBFCs that must keep data in-house can run the same software in their own data centre or cloud account.</p>
+      </div>
+      <div class="card">
+        <h3>Limits and abuse protection</h3>
+        <p>Per-key rate limits and monthly quotas, file-type checks by content, size and page limits.</p>
+      </div>
+    </div>
+    <div class="wrap" style="margin-top:2rem">
+      <p class="note">
+        These controls are designed to support your obligations under the Digital Personal Data
+        Protection Act, 2023 and UIDAI's Aadhaar guidelines. Ask us for our data processing terms.
+      </p>
+    </div>
+  </section>
+</Base>

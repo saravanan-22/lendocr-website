@@ -1,0 +1,144 @@
+---
+import Base from "../layouts/Base.astro";
+import { SITE, link, mailto } from "../config";
+
+const endpoints = [
+  ["POST", "/v1/documents:extract", "Fields, checks and needs_review for one document"],
+  ["POST", "/v1/documents:batch", "Up to 10 documents in one call, results per file"],
+  ["POST", "/v1/documents:read", "All the text in any document, page by page"],
+  ["POST", "/v1/jobs", "Queue 1-20 documents for background processing (202)"],
+  ["GET", "/v1/jobs/{job_id}", "Job status, and the full result when done"],
+  ["DELETE", "/v1/jobs/{job_id}", "Cancel a queued job or erase a result now"],
+  ["POST", "/v1/validate", "Check a single PAN, Aadhaar, GSTIN, IFSC, DL, passport and more"],
+  ["GET", "/v1/usage", "Pages your organisation used this month"],
+  ["GET", "/v1/document-types", "Supported documents"],
+];
+const errors = [
+  ["401", "Missing, wrong, revoked or expired API key"],
+  ["403", "The key does not have this scope"],
+  ["413 / 415", "File larger than 10 MB / not a readable image or PDF"],
+  ["422", "Invalid field, wrong PDF password, or unknown document type"],
+  ["429", "Rate limit or monthly quota reached; see Retry-After"],
+  ["503", "Busy; see Retry-After and try again"],
+];
+const python = `import requests
+
+r = requests.post(
+    "${SITE.apiBase}/v1/documents:extract",
+    headers={"Authorization": "Bearer lo_test_..."},
+    files={"file": open("statement.pdf", "rb")},
+    data={"password": "optional-pdf-password"},
+    timeout=60,
+)
+r.raise_for_status()
+doc = r.json()
+if doc["needs_review"]:
+    print("Send to a reviewer:", doc["warnings"])`;
+const node = `const form = new FormData();
+form.append("file", new Blob([await fs.promises.readFile("pan.jpg")]), "pan.jpg");
+
+const res = await fetch("${SITE.apiBase}/v1/documents:extract", {
+  method: "POST",
+  headers: { Authorization: "Bearer lo_test_..." },
+  body: form,
+});
+const doc = await res.json();
+console.log(doc.document_type, doc.fields);`;
+const jobs = `curl ${SITE.apiBase}/v1/jobs \\
+  -H "Authorization: Bearer lo_live_..." \\
+  -H "Idempotency-Key: loan-app-1042" \\
+  -F files=@statement.pdf -F files=@pan.jpg \\
+  -F webhook_url=https://your-server.example.com/hooks/lendocr`;
+const verify = `import hashlib, hmac, time
+
+def verify(secret: str, header: str, body: bytes) -> bool:
+    parts = dict(p.split("=", 1) for p in header.split(","))  # t=...,v1=...
+    if abs(time.time() - int(parts["t"])) > 300:  # reject replays
+        return False
+    mac = hmac.new(secret.encode(), f"{parts['t']}.".encode() + body, hashlib.sha256)
+    return hmac.compare_digest(mac.hexdigest(), parts["v1"])`;
+---
+
+<Base
+  title="Developer Guide: OCR API for KYC and Loan Documents"
+  description="Integrate the LendOCR API: API keys, extract, batch and background jobs, signed webhooks, error codes and Python and Node examples."
+  path="developers/"
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Developers</p>
+      <h1>Developer guide</h1>
+      <p class="lead">A REST API with JSON responses. Most teams integrate in an afternoon.</p>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <h2>1. Get a key</h2>
+      <p>
+        You get two kinds of key. <code>lo_test_...</code> keys are free, work on every endpoint
+        and are never billed, so use them while you build. <code>lo_live_...</code> keys are for
+        production. Keep keys on your server, never in a mobile app or web page.
+        <a href={mailto("API key request")}>Request a test key</a>.
+      </p>
+
+      <h2>2. Send a document</h2>
+      <pre><code>{`curl ${SITE.apiBase}/v1/documents:extract \\
+  -H "Authorization: Bearer lo_test_..." \\
+  -F file=@pan.jpg`}</code></pre>
+      <div class="grid two">
+        <div><h3>Python</h3><pre><code>{python}</code></pre></div>
+        <div><h3>Node.js</h3><pre><code>{node}</code></pre></div>
+      </div>
+
+      <h2>Form fields</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Field</th><th>Default</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td><code>file</code></td><td>required</td><td>JPEG, PNG, WebP, TIFF, BMP or PDF; up to 10 MB and 50 pages</td></tr>
+            <tr><td><code>document_type</code></td><td><code>auto</code></td><td>Name the type, or let LendOCR detect it</td></tr>
+            <tr><td><code>engine</code></td><td><code>auto</code></td><td><code>fast</code>, <code>accurate</code>, or <code>auto</code> (fast first, careful second read when needed)</td></tr>
+            <tr><td><code>password</code></td><td>none</td><td>For password-protected PDFs</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Endpoints</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+          <tbody>{endpoints.map(([m, p, d]) => <tr><td><code>{m}</code></td><td><code>{p}</code></td><td>{d}</td></tr>)}</tbody>
+        </table>
+      </div>
+
+      <h2>Responses and errors</h2>
+      <p>
+        Successful responses carry <code>fields</code> (value and confidence), <code>checks</code>,
+        <code>needs_review</code> and <code>warnings</code>. Errors use standard HTTP codes with a JSON
+        body (<code>application/problem+json</code>) and a <code>request_id</code> for support.
+      </p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>When</th></tr></thead>
+          <tbody>{errors.map(([s, w]) => <tr><td><code>{s}</code></td><td>{w}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <p>Every response includes <code>X-RateLimit-Limit</code>, <code>X-RateLimit-Remaining</code> and <code>X-Request-ID</code>.</p>
+
+      <h2>Background jobs and webhooks</h2>
+      <p>
+        For large statements and bulk uploads, queue the files and get notified. Sending the same
+        <code>Idempotency-Key</code> again returns the same jobs, so retries never create duplicates.
+      </p>
+      <pre><code>{jobs}</code></pre>
+      <p>
+        When each job finishes we <code>POST</code> to your <code>webhook_url</code> (https only), retrying
+        for about a day if your server is down. The body has no document data; fetch the result with
+        <code>GET /v1/jobs/&#123;job_id&#125;</code>. Verify the <code>X-LendOCR-Signature</code> header with your
+        webhook secret:
+      </p>
+      <pre><code>{verify}</code></pre>
+    </div>
+  </section>
+</Base>

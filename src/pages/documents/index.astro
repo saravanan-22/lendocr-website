@@ -1,0 +1,40 @@
+---
+import Base from "../../layouts/Base.astro";
+import { DOCUMENTS, GROUPS } from "../../data/documents";
+import { link } from "../../config";
+---
+
+<Base
+  title="Supported Documents: KYC, Banking and Income"
+  description="Documents the LendOCR API reads: PAN, Aadhaar, voter ID, driving licence, passport, cheque, bank statement, bills, insurance, ITR, GST and more."
+  path="documents/"
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Documents</p>
+      <h1>Supported documents</h1>
+      <p class="lead">
+        One API for the documents Indian lenders collect. Each returns validated fields, check results
+        and a review flag. Send photos, scans or PDFs.
+      </p>
+    </div>
+  </section>
+  {
+    GROUPS.map((group) => (
+      <section style="padding:1.5rem 0">
+        <div class="wrap">
+          <h2>{group}</h2>
+          <div class="grid three">
+            {DOCUMENTS.filter((d) => d.group === group).map((d) => (
+              <a class="card" href={link(`documents/${d.slug}/`)}>
+                <h3>{d.name}</h3>
+                <p>{d.summary}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+  <section></section>
+</Base>

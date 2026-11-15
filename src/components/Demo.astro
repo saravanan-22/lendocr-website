@@ -1,0 +1,159 @@
+---
+import { DEMO as demo } from "../data/demo";
+import { link } from "../config";
+
+const pretty = (o: unknown) => JSON.stringify(o, null, 2);
+const label = (s: string) => s.replaceAll("_", " ");
+---
+
+<div class="demo">
+  <div class="demo-tabs" role="tablist" aria-label="Sample documents">
+    {
+      demo.map((s, i) => (
+        <button
+          role="tab"
+          id={`tab-${s.id}`}
+          aria-controls={`panel-${s.id}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          tabindex={i === 0 ? 0 : -1}
+        >
+          {s.title}
+        </button>
+      ))
+    }
+  </div>
+  {
+    demo.map((s, i) => {
+      const r = s.response;
+      const fields = Object.entries(r.fields);
+      return (
+        <div class="demo-panel" role="tabpanel" id={`panel-${s.id}`} aria-labelledby={`tab-${s.id}`} hidden={i !== 0}>
+          <figure class="demo-image">
+            <img src={link(s.image)} alt={`Sample ${s.title} (synthetic specimen)`} width={s.width} height={s.height} loading={i === 0 ? "eager" : "lazy"} />
+            <figcaption>Synthetic specimen. No real person's data.</figcaption>
+          </figure>
+          <div class="demo-result">
+            <div class="demo-meta">
+              <span class="badge">{r.document_type}</span>
+              {r.needs_review ? <span class="badge warn">needs review</span> : <span class="badge ok">no review needed</span>}
+              <span class="note">{r.processing_ms} ms</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Field</th><th>Value</th><th>Confidence</th></tr></thead>
+                <tbody>
+                  {fields.map(([name, f]) => (
+                    <tr><td>{label(name)}</td><td><code>{f.value}</code></td><td>{Math.round(f.confidence * 100)}%</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <ul class="checks compact">
+              {Object.entries(r.checks).map(([name, ok]) => (
+                <li class={ok ? "" : "fail"}>{label(name)}</li>
+              ))}
+            </ul>
+            <details>
+              <summary>Raw JSON response</summary>
+              <pre><code>{pretty(r)}</code></pre>
+            </details>
+          </div>
+        </div>
+      );
+    })
+  }
+</div>
+
+<style>
+  .demo-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+  .demo-tabs button {
+    font: inherit;
+    font-size: 0.92rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .demo-tabs button[aria-selected="true"] {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .demo-panel {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .demo-panel[hidden] {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .demo-panel {
+      grid-template-columns: 5fr 6fr;
+    }
+  }
+  .demo-image {
+    margin: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--surface);
+  }
+  .demo-image figcaption {
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+  .demo-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .compact li {
+    display: inline-block;
+    margin-right: 1rem;
+    font-size: 0.92rem;
+  }
+  .compact li.fail::before {
+    content: "✗";
+    color: var(--warn);
+  }
+  details pre {
+    margin-top: 0.75rem;
+    max-height: 22rem;
+  }
+</style>
+
+<script>
+  // Tabs: click or arrow keys switch the visible sample.
+  const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>(".demo-tabs [role=tab]"));
+  function select(tab: HTMLButtonElement) {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")!)!.hidden = !on;
+    }
+  }
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => select(tab));
+    tab.addEventListener("keydown", (e) => {
+      const next = e.key === "ArrowRight" ? i + 1 : e.key === "ArrowLeft" ? i - 1 : null;
+      if (next === null) return;
+      const target = tabs[(next + tabs.length) % tabs.length];
+      select(target);
+      target.focus();
+    });
+  });
+</script>

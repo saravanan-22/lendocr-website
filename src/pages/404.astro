@@ -1,0 +1,17 @@
+---
+import Base from "../layouts/Base.astro";
+import { link } from "../config";
+---
+
+<Base title="Page not found" description="This page does not exist." noindex>
+  <section class="page-head">
+    <div class="wrap">
+      <h1>Page not found</h1>
+      <p class="lead">The page you asked for does not exist.</p>
+      <div class="actions">
+        <a class="btn primary" href={link()}>Home</a>
+        <a class="btn secondary" href={link("documents/")}>Supported documents</a>
+      </div>
+    </div>
+  </section>
+</Base>

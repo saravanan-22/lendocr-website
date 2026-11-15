@@ -1,0 +1,32 @@
+---
+import { SITE, link } from "../config";
+import { DOCUMENTS } from "../data/documents";
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <strong>{SITE.name}</strong>
+      <p>{SITE.tagline}. Validated JSON for KYC, banking, income, address and business documents.</p>
+      <p>Contact: <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      <p>© {year} {SITE.name}</p>
+    </div>
+    <div>
+      <strong>Documents</strong>
+      <ul>
+        {DOCUMENTS.slice(0, 7).map((d) => <li><a href={link(`documents/${d.slug}/`)}>{d.name}</a></li>)}
+        <li><a href={link("documents/")}>All documents</a></li>
+      </ul>
+    </div>
+    <div>
+      <strong>Company</strong>
+      <ul>
+        <li><a href={link("developers/")}>Developers</a></li>
+        <li><a href={link("security/")}>Security and privacy</a></li>
+        <li><a href={link("pricing/")}>Pricing</a></li>
+        <li><a href={link("contact/")}>Contact</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

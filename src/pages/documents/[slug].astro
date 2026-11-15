@@ -1,0 +1,126 @@
+---
+import Base from "../../layouts/Base.astro";
+import { DOCUMENTS, type DocInfo } from "../../data/documents";
+import { DEMO as demo } from "../../data/demo";
+import { SITE, link, mailto } from "../../config";
+
+export function getStaticPaths() {
+  return DOCUMENTS.map((doc) => ({ params: { slug: doc.slug }, props: { doc } }));
+}
+
+const { doc } = Astro.props as { doc: DocInfo };
+const sample = demo.find((s) => s.id === doc.demo);
+const related = DOCUMENTS.filter((d) => d.group === doc.group && d.slug !== doc.slug).slice(0, 3);
+const others = related.length ? related : DOCUMENTS.filter((d) => d.slug !== doc.slug).slice(0, 3);
+const path = `documents/${doc.slug}/`;
+const url = new URL(link(path), Astro.site ?? SITE.url).href;
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: new URL(link(), Astro.site ?? SITE.url).href },
+      { "@type": "ListItem", position: 2, name: "Documents", item: new URL(link("documents/"), Astro.site ?? SITE.url).href },
+      { "@type": "ListItem", position: 3, name: doc.name, item: url },
+    ],
+  },
+];
+const curl = `curl ${SITE.apiBase}/v1/documents:extract \\
+  -H "Authorization: Bearer lo_test_..." \\
+  -F file=@document.jpg \\
+  -F document_type=${doc.type}`;
+---
+
+<Base title={doc.title} description={doc.description} path={path} jsonLd={jsonLd}>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / <a href={link("documents/")}>Documents</a> / {doc.name}</p>
+      <p class="eyebrow">{doc.group}</p>
+      <h1>{doc.h1 ?? `${doc.name} OCR API`}</h1>
+      <p class="lead">{doc.intro}</p>
+      <div class="actions">
+        <a class="btn primary" href={mailto(`API key request: ${doc.name}`)}>Get a free test key</a>
+        <a class="btn secondary" href={link("developers/")}>Developer guide</a>
+      </div>
+    </div>
+  </section>
+
+  {
+    sample && (
+      <section class="soft">
+        <div class="wrap grid two" style="align-items:start">
+          <figure style="margin:0" class="card">
+            <img src={link(sample.image)} alt={`Sample ${doc.name} (synthetic specimen)`} width={sample.width} height={sample.height} />
+            <figcaption class="note" style="margin-top:.5rem">Synthetic specimen. No real person's data.</figcaption>
+          </figure>
+          <div>
+            <h2>Real response for this sample</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Field</th><th>Value</th><th>Confidence</th></tr></thead>
+                <tbody>
+                  {Object.entries(sample.response.fields).map(([k, f]) => (
+                    <tr><td>{k.replaceAll("_", " ")}</td><td><code>{f.value}</code></td><td>{Math.round(f.confidence * 100)}%</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p class="note">
+              {sample.response.needs_review ? "Flagged for review." : "No review needed."} Read in {sample.response.processing_ms} ms.
+            </p>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section>
+    <div class="wrap grid two" style="align-items:start">
+      <div>
+        <h2>Fields returned</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>What it is</th></tr></thead>
+            <tbody>
+              {doc.fields.map((f) => <tr><td><code>{f.name}</code></td><td>{f.about}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Every field comes with a confidence score from 0 to 1.</p>
+      </div>
+      <div>
+        <h2>Checks</h2>
+        <ul class="checks">{doc.checks.map((c) => <li>{c}</li>)}</ul>
+        <p>
+          If a required field is missing, unsure, or a check fails, the response has
+          <code>needs_review: true</code> and a warning explaining why.
+        </p>
+        <h2>Used for</h2>
+        <ul class="checks">{doc.useCases.map((u) => <li>{u}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap">
+      <h2>Request</h2>
+      <p>Send a JPEG, PNG, WebP, TIFF, BMP or PDF up to 10 MB. Leave out <code>document_type</code> to detect it automatically.</p>
+      <pre><code>{curl}</code></pre>
+      <p><a href={link("developers/")}>Authentication, errors, batch uploads and webhooks →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <h2>Related documents</h2>
+      <div class="grid three">
+        {others.map((d) => (
+          <a class="card" href={link(`documents/${d.slug}/`)}>
+            <h3>{d.name}</h3>
+            <p>{d.summary}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>

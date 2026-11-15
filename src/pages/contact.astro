@@ -1,0 +1,34 @@
+---
+import Base from "../layouts/Base.astro";
+import { SITE, link, mailto } from "../config";
+---
+
+<Base
+  title="Contact: Test Keys, Pilots and Pricing"
+  description="Talk to LendOCR about OCR for KYC, bank statements and loan documents: test keys, pilots, pricing and on-premise deployments."
+  path="contact/"
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Contact</p>
+      <h1>Contact</h1>
+      <p class="lead">Write to <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We reply within one working day.</p>
+    </div>
+  </section>
+  <section style="padding-top:0">
+    <div class="wrap grid three">
+      <a class="card" href={mailto("API key request", "Company:\nUse case:\nExpected documents per month:")}>
+        <h3>Get a test key</h3><p>Start integrating today. Free.</p>
+      </a>
+      <a class="card" href={mailto("Pilot", "Company:\nDocuments to test:\nVolume:")}>
+        <h3>Run a pilot</h3><p>We measure accuracy on your own documents first.</p>
+      </a>
+      <a class="card" href={mailto("On-premise licence")}>
+        <h3>On-premise</h3><p>Run LendOCR inside your network.</p>
+      </a>
+    </div>
+    <div class="wrap" style="margin-top:2rem">
+      <p class="note">Please do not email real customer documents. For a pilot we agree a secure way to share samples.</p>
+    </div>
+  </section>
+</Base>

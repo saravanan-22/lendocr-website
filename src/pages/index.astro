@@ -1,0 +1,248 @@
+---
+import Base from "../layouts/Base.astro";
+import Demo from "../components/Demo.astro";
+import { DOCUMENTS } from "../data/documents";
+import { SITE, link, mailto } from "../config";
+
+const faqs = [
+  {
+    q: "Which documents can LendOCR read?",
+    a: "PAN, Aadhaar (front and back), voter ID, driving licence, passport, cheques, bank statements, electricity and water bills, bike and car insurance, ITR-V, salary slips, GST certificates and Udyam certificates. Photos, scans and PDFs, including password-protected PDFs.",
+  },
+  {
+    q: "Do you store our customers' documents?",
+    a: "No. Documents sent to the extract API are processed in memory and dropped. For background jobs, the file is kept encrypted only until it is processed, then deleted; results are kept encrypted for 24 hours so you can collect them, then erased. Aadhaar numbers are always returned masked.",
+  },
+  {
+    q: "Does LendOCR prove a document is genuine?",
+    a: "It checks that every number could be real (Aadhaar and GSTIN checksums, passport MRZ check digits, PAN and DL formats, bank statement balances) and flags anything doubtful for review. Proving a document belongs to a person needs a government source such as Income Tax or UIDAI verification, which you use alongside LendOCR.",
+  },
+  {
+    q: "How fast is it?",
+    a: "A card such as PAN or Aadhaar takes about 0.2 seconds on a GPU; digital PDFs take milliseconds. Large files and bulk uploads can run as background jobs that call your webhook when done.",
+  },
+  {
+    q: "What does needs_review mean?",
+    a: "Every response says whether a person should check the document: when a required field is missing, the model was unsure, or a check failed. Clear documents go straight through; only doubtful ones reach your team.",
+  },
+  {
+    q: "Can we run it on our own servers?",
+    a: "Yes. LendOCR ships as Docker containers, so banks and NBFCs that must keep data in-house can run it in their own data centre or cloud account.",
+  },
+  {
+    q: "How do we start?",
+    a: "Ask for a free test key. It works on every endpoint so your developers can integrate, and test calls are never billed. When you go live, you get a live key with your agreed volume.",
+  },
+];
+
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE.name,
+    url: SITE.url,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: `${SITE.name} OCR API`,
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web API",
+    description: SITE.description,
+    areaServed: "IN",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  },
+];
+---
+
+<Base
+  title="OCR API for Indian KYC and Loan Documents | LendOCR"
+  description="OCR API for Indian lenders: read PAN, Aadhaar, bank statements, cheques, bills, ITR and salary slips into validated JSON with review flags."
+  jsonLd={jsonLd}
+>
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Document OCR API for Indian lending</p>
+      <h1>Read KYC and loan documents into checked, ready-to-use data</h1>
+      <p class="lead">
+        Send a photo or PDF of a PAN, Aadhaar, bank statement, cheque, bill, ITR or salary slip. Get
+        back structured JSON in under a second, every field validated, and a clear flag when a person
+        should take a look.
+      </p>
+      <div class="actions">
+        <a class="btn primary" href={mailto("API key request", "Company:\nUse case:\nExpected documents per month:")}>Get a free test key</a>
+        <a class="btn secondary" href="#demo">See real output</a>
+      </div>
+      <ul class="points">
+        <li>14 Indian document types</li>
+        <li>Checksums and cross-checks</li>
+        <li>Documents not stored</li>
+        <li>Your cloud or ours</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="demo" class="soft">
+    <div class="wrap">
+      <p class="eyebrow">Real output</p>
+      <h2>What you get back</h2>
+      <p class="lead">
+        These are actual responses from the LendOCR API for sample documents. Pick one to see the
+        fields, confidence and checks.
+      </p>
+      <Demo />
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Coverage</p>
+      <h2>Documents lenders ask for</h2>
+      <p class="lead">One endpoint for all of them. LendOCR detects the document type for you.</p>
+      <div class="grid three">
+        {
+          DOCUMENTS.map((d) => (
+            <a class="card" href={link(`documents/${d.slug}/`)}>
+              <span class="badge">{d.group}</span>
+              <h3 style="margin-top:.5rem">{d.name}</h3>
+              <p>{d.summary}</p>
+            </a>
+          ))
+        }
+      </div>
+      <p style="margin-top:1.5rem"><a href={link("documents/")}>Fields and checks for every document →</a></p>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2>Three steps, one API call</h2>
+      <ol class="steps grid three">
+        <li class="card">
+          <h3>Send the document</h3>
+          <p>Upload a photo, scan or PDF from your app or loan system. Password-protected PDFs are fine.</p>
+        </li>
+        <li class="card">
+          <h3>We read and check it</h3>
+          <p>OCR reads every field, then validators check numbers, dates and totals. Unclear images get a second, more careful read.</p>
+        </li>
+        <li class="card">
+          <h3>You get clean JSON</h3>
+          <p>Fields with confidence scores, check results and a <code>needs_review</code> flag your workflow can act on.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Why LendOCR</p>
+      <h2>Built for lending, not just reading text</h2>
+      <div class="grid three">
+        <div class="card">
+          <h3>Validation, not only OCR</h3>
+          <p>Aadhaar Verhoeff and GSTIN checksums, passport MRZ check digits, PAN, DL and vehicle formats, salary maths and bank statement balances.</p>
+        </div>
+        <div class="card">
+          <h3>Fewer manual checks</h3>
+          <p>Each document says whether it needs review and why. Clear documents flow straight through.</p>
+        </div>
+        <div class="card">
+          <h3>Bank statement analysis</h3>
+          <p>Salary, EMIs, cheque bounces, cash deposits, average balance, and rows that do not add up.</p>
+        </div>
+        <div class="card">
+          <h3>Private by design</h3>
+          <p>No document storage on the extract API, masked Aadhaar, encrypted background jobs, hashed API keys.</p>
+        </div>
+        <div class="card">
+          <h3>Fast and scalable</h3>
+          <p>About 0.2 s per card on GPU, batch uploads, and background jobs with signed webhooks.</p>
+        </div>
+        <div class="card">
+          <h3>Runs where you need it</h3>
+          <p>Use our API, or run the same containers in your own data centre when data must stay in-house.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap grid two" style="align-items:start">
+      <div>
+        <p class="eyebrow">For developers</p>
+        <h2>One request</h2>
+        <p>
+          Send the file with your API key. The document type is detected automatically, or you can name
+          it. Errors are standard HTTP with clear messages.
+        </p>
+        <p><a href={link("developers/")}>Read the developer guide →</a></p>
+      </div>
+      <pre><code>{`curl ${SITE.apiBase}/v1/documents:extract \\
+  -H "Authorization: Bearer lo_test_..." \\
+  -F file=@pan.jpg
+
+{
+  "document_type": "pan",
+  "fields": {
+    "pan":  { "value": "ABCPK1234F", "confidence": 1.0 },
+    "name": { "value": "RAVI KUMAR", "confidence": 0.99 },
+    "dob":  { "value": "1990-04-12", "confidence": 1.0 }
+  },
+  "checks": { "pan_format": true, "name_matches_pan": true },
+  "needs_review": false
+}`}</code></pre>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Accuracy</p>
+      <h2>Measured, not promised</h2>
+      <p class="lead">
+        We test every document type on clean, blurred, rotated, compressed, low-resolution, dim and
+        phone-photo copies. On our latest test set of synthetic documents (552 fields across 107 runs),
+        LendOCR read 100% of fields correctly with the automatic engine, with no wrong field left
+        unflagged.
+      </p>
+      <p class="note">
+        Synthetic test documents are not the real world. During a pilot we measure accuracy on your own
+        documents before you go live.
+      </p>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap">
+      <h2>Questions</h2>
+      {
+        faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <h2>Try it on your documents</h2>
+      <p class="lead" style="margin:0 auto">Get a free test key and integrate in an afternoon.</p>
+      <div class="actions">
+        <a class="btn primary" href={mailto("API key request", "Company:\nUse case:\nExpected documents per month:")}>Get a free test key</a>
+        <a class="btn secondary" href={link("contact/")}>Talk to us</a>
+      </div>
+    </div>
+  </section>
+</Base>
