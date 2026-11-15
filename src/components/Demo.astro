@@ -11,6 +11,7 @@ const label = (s: string) => s.replaceAll("_", " ");
     {
       demo.map((s, i) => (
         <button
+          type="button"
           role="tab"
           id={`tab-${s.id}`}
           aria-controls={`panel-${s.id}`}
@@ -91,6 +92,9 @@ const label = (s: string) => s.replaceAll("_", " ");
     display: grid;
     gap: 1.5rem;
     align-items: start;
+  }
+  .demo-panel > * {
+    min-width: 0; /* let the results table scroll instead of widening the page */
   }
   .demo-panel[hidden] {
     display: none;

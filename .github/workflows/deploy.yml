@@ -30,7 +30,9 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx astro check
-      - run: npm run build
+      # Builds the site, validates every page's HTML, and runs tests/site.test.mjs
+      # (links, SEO tags, sitemap, privacy, contrast). Nothing deploys if any fail.
+      - run: npm test
         env:
           SITE_URL: ${{ vars.SITE_URL || 'https://lendocr.com' }}
           BASE_PATH: ${{ vars.BASE_PATH || '/' }}

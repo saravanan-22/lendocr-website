@@ -26,6 +26,7 @@ npm install
 npm run dev        # http://localhost:4321
 npm run build      # -> dist/
 npm run check      # type check
+npm test           # build + HTML validation + site tests (links, SEO, sitemap, privacy, contrast)
 ```
 
 ## Content

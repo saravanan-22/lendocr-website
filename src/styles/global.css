@@ -183,6 +183,12 @@ section {
   gap: 1rem;
 }
 
+/* Grid items may shrink below their content's width (long code lines, large images);
+   otherwise they push the page wider than a phone screen. */
+.grid > * {
+  min-width: 0;
+}
+
 @media (min-width: 720px) {
   .grid.two {
     grid-template-columns: repeat(2, 1fr);
