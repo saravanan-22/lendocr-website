@@ -166,13 +166,14 @@ const contrast = (a, b) => {
   return (l1 + 0.05) / (l2 + 0.05);
 };
 
-test("text colours meet WCAG AA contrast in light and dark mode", () => {
+test("text colours meet WCAG AA contrast", () => {
   const css = readFileSync(new URL("../src/styles/global.css", import.meta.url), "utf8");
-  const blocks = [css.match(/:root \{([\s\S]*?)\}/)[1], css.match(/@media \(prefers-color-scheme: dark\) \{\s*:root \{([\s\S]*?)\}/)[1]];
+  const dark = css.match(/@media \(prefers-color-scheme: dark\) \{\s*:root \{([\s\S]*?)\}/);
+  const blocks = [css.match(/:root \{([\s\S]*?)\}/)[1], ...(dark ? [dark[1]] : [])];
   for (const [i, block] of blocks.entries()) {
     const v = Object.fromEntries([...block.matchAll(/--([\w-]+):\s*(#[0-9a-f]{6})/gi)].map((m) => [m[1], m[2]]));
     const mode = i ? "dark" : "light";
-    for (const [fg, bg] of [["text", "bg"], ["muted", "bg"], ["muted", "bg-soft"], ["accent", "bg"], ["accent", "accent-soft"], ["ok", "ok-soft"]]) {
+    for (const [fg, bg] of [["text", "bg"], ["muted", "bg"], ["muted", "bg-soft"], ["accent", "bg"], ["accent", "accent-soft"], ["ok", "ok-soft"], ["warn", "warn-soft"], ["code-text", "code-bg"]]) {
       const ratio = contrast(v[fg], v[bg]);
       assert.ok(ratio >= 4.5, `${mode}: ${fg} on ${bg} is ${ratio.toFixed(2)}:1 (needs 4.5)`);
     }

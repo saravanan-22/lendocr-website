@@ -1,44 +1,28 @@
 /* LendOCR site styles: clean, fast, no web fonts, no animation libraries. */
 
 :root {
+  /* Brand: deep teal (verified, money) on clean white, navy text. */
   --bg: #ffffff;
-  --bg-soft: #f6f8fb;
+  --bg-soft: #f5f8f7;
   --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #475569;
-  --border: #e2e8f0;
-  --accent: #0b5cad;
-  --accent-strong: #084a8c;
-  --accent-soft: #e8f1fb;
+  --text: #0f1b2d;
+  --muted: #4a5568;
+  --border: #e2e8e6;
+  --accent: #0f766e;
+  --accent-strong: #115e59;
+  --accent-soft: #e6f4f1;
   --ok: #15803d;
   --ok-soft: #e8f6ee;
   --warn: #b45309;
-  --code-bg: #0f172a;
-  --code-text: #e2e8f0;
-  --radius: 10px;
+  --warn-soft: #fff4e5;
+  --code-bg: #0f1b2d;
+  --code-text: #e6edf5;
+  --radius: 12px;
   --max: 1120px;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-head: "Plus Jakarta Sans Variable", "Inter Variable", system-ui, sans-serif;
   --mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0b1220;
-    --bg-soft: #0f172a;
-    --surface: #111a2e;
-    --text: #e5ecf5;
-    --muted: #9fb0c6;
-    --border: #22304a;
-    --accent: #5aa3ec;
-    --accent-strong: #84bcf2;
-    --accent-soft: #10243d;
-    --ok: #4ade80;
-    --ok-soft: #0f2a1c;
-    --warn: #fbbf24;
-    --code-bg: #060b16;
-    color-scheme: dark;
-  }
 }
 
 *,
@@ -57,7 +41,8 @@ body {
   color: var(--text);
   font-family: var(--font);
   font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
 img {
@@ -78,9 +63,16 @@ a:hover {
 h1,
 h2,
 h3 {
+  font-family: var(--font-head);
+  font-weight: 700;
   line-height: 1.2;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.015em;
   margin: 0 0 0.5em;
+}
+
+h1 {
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
 h1 {
@@ -217,11 +209,12 @@ section {
 a.card {
   color: inherit;
   text-decoration: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 a.card:hover {
   border-color: var(--accent);
+  box-shadow: 0 4px 14px rgba(15, 27, 45, 0.06);
 }
 
 /* header and footer */
@@ -249,7 +242,8 @@ a.card:hover {
 }
 
 .brand {
-  font-weight: 700;
+  font-family: var(--font-head);
+  font-weight: 800;
   font-size: 1.2rem;
   color: var(--text);
   text-decoration: none;
@@ -320,7 +314,8 @@ a.card:hover {
   display: inline-block;
   padding: 0.7rem 1.2rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-family: var(--font-head);
+  font-weight: 700;
   text-decoration: none;
   border: 1px solid var(--accent);
   font-size: 0.98rem;
@@ -345,16 +340,12 @@ a.card:hover {
   background: var(--accent-soft);
 }
 
-@media (prefers-color-scheme: dark) {
-  .btn.primary,
-  .btn.primary:hover {
-    color: #06111f;
-  }
-}
 
 /* hero */
 .hero {
   padding: 4.5rem 0 3.5rem;
+  background: linear-gradient(180deg, var(--accent-soft) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--border);
 }
 
 .hero .points {
@@ -467,7 +458,7 @@ tr:last-child td {
 }
 
 .badge.warn {
-  background: #fff4e5;
+  background: var(--warn-soft);
   color: var(--warn);
 }
 
