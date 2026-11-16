@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "astro build && html-validate \"dist/**/*.html\" && node --test tests/"
+    "test": "astro build && html-validate \"dist/**/*.html\" && node --test tests/site.test.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "3.7.4",
