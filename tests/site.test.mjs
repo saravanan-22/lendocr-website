@@ -7,6 +7,9 @@ import { join, relative } from "node:path";
 
 const DIST = new URL("../dist/", import.meta.url).pathname;
 const SITE = (process.env.SITE_URL ?? "https://lendocr.com").replace(/\/$/, "");
+// Deployed under a sub-path (e.g. GitHub Pages /lendocr-website/) or at the root.
+const BASE = (process.env.BASE_PATH ?? "/").replace(/\/?$/, "/");
+const ROOT_URL = SITE + BASE.replace(/\/$/, "");
 
 function walk(dir) {
   return readdirSync(dir).flatMap((name) => {
@@ -21,6 +24,7 @@ const indexable = pages.filter((f) => !f.endsWith("404.html"));
 const urlOf = (file) => "/" + relative(DIST, file).replace(/index\.html$/, "");
 const html = Object.fromEntries(pages.map((f) => [urlOf(f), readFileSync(f, "utf8")]));
 const exists = (path) => {
+  if (path.startsWith(BASE)) path = "/" + path.slice(BASE.length);
   const clean = decodeURI(path.split("#")[0].split("?")[0]);
   const target = join(DIST, clean);
   return existsSync(target) && (statSync(target).isFile() || existsSync(join(target, "index.html")));
@@ -29,7 +33,7 @@ const attr = (page, re) => [...page.matchAll(re)].map((m) => m[1]);
 
 test("expected pages are built", () => {
   const urls = Object.keys(html);
-  for (const url of ["/", "/documents/", "/developers/", "/security/", "/pricing/", "/contact/", "/about/", "/404.html"]) {
+  for (const url of ["/", "/documents/", "/use-cases/", "/developers/", "/security/", "/pricing/", "/contact/", "/about/", "/404.html"]) {
     assert.ok(urls.includes(url), `missing ${url}`);
   }
   const docPages = urls.filter((u) => /^\/documents\/.+\/$/.test(u));
@@ -82,7 +86,7 @@ test("each page has SEO basics", () => {
     titles.add(title);
     descriptions.add(desc);
     assert.equal((page.match(/<h1[\s>]/g) ?? []).length, 1, `${url} must have one h1`);
-    assert.match(page, new RegExp(`<link rel="canonical" href="${SITE}${url}"`), `${url} canonical`);
+    assert.match(page, new RegExp(`<link rel="canonical" href="${ROOT_URL}${url}"`), `${url} canonical`);
     assert.match(page, /<html lang="en-IN">/, `${url} lang`);
     for (const tag of ["og:title", "og:description", "og:image", "og:url"]) {
       assert.match(page, new RegExp(`property="${tag}"`), `${url} missing ${tag}`);
@@ -116,16 +120,22 @@ test("structured data is valid JSON-LD", () => {
   const home = attr(html["/"], /<script type="application\/ld\+json">(.*?)<\/script>/gs).map((b) => JSON.parse(b));
   const faq = home.find((d) => d["@type"] === "FAQPage");
   assert.ok(faq && faq.mainEntity.length >= 5, "home has an FAQPage");
+  for (const [url, page] of Object.entries(html).filter(([u]) => /^\/documents\/.+\/$/.test(u))) {
+    const blocks = attr(page, /<script type="application\/ld\+json">(.*?)<\/script>/gs).map((b) => JSON.parse(b));
+    const docFaq = blocks.find((d) => d["@type"] === "FAQPage");
+    assert.ok(docFaq && docFaq.mainEntity.length >= 3, `${url} has an FAQPage with 3+ questions`);
+    assert.ok(blocks.some((d) => d["@type"] === "BreadcrumbList"), `${url} has breadcrumbs`);
+  }
 });
 
 test("sitemap lists every indexable page and robots.txt points to it", () => {
   const sitemap = readFileSync(join(DIST, "sitemap-0.xml"), "utf8");
   const locs = new Set(attr(sitemap, /<loc>([^<]+)<\/loc>/g));
-  for (const file of indexable) assert.ok(locs.has(SITE + urlOf(file)), `sitemap missing ${urlOf(file)}`);
+  for (const file of indexable) assert.ok(locs.has(ROOT_URL + urlOf(file)), `sitemap missing ${urlOf(file)}`);
   assert.ok(![...locs].some((l) => l.includes("404")), "404 must not be in the sitemap");
   const robots = readFileSync(join(DIST, "robots.txt"), "utf8");
   assert.match(robots, /Allow: \//);
-  assert.match(robots, new RegExp(`Sitemap: ${SITE}/sitemap-index.xml`));
+  assert.match(robots, new RegExp(`Sitemap: ${ROOT_URL}/sitemap-index.xml`));
 });
 
 test("no personal data or placeholders leak into the site", () => {

@@ -12,9 +12,12 @@ interface Props {
   path?: string; // e.g. "documents/aadhaar-ocr-api/"
   jsonLd?: object[];
   noindex?: boolean;
+  crumb?: string; // adds Home > crumb breadcrumb structured data for top-level pages
 }
 
-const { title, description, path = "", jsonLd = [], noindex = false } = Astro.props;
+const { title, description, path = "", jsonLd = [], noindex = false, crumb } = Astro.props;
+// Google Search Console: set PUBLIC_GOOGLE_SITE_VERIFICATION at build time.
+const verification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION;
 const fullTitle = title.includes(SITE.name) ? title : `${title} | ${SITE.name}`;
 const canonical = new URL(link(path), Astro.site ?? SITE.url).href;
 const ogImage = new URL(link("og.png"), Astro.site ?? SITE.url).href;
@@ -28,6 +31,18 @@ const structured = [
     email: SITE.email,
     areaServed: "IN",
   },
+  ...(crumb
+    ? [
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: new URL(link(), Astro.site ?? SITE.url).href },
+            { "@type": "ListItem", position: 2, name: crumb, item: canonical },
+          ],
+        },
+      ]
+    : []),
   ...jsonLd,
 ];
 ---
@@ -41,6 +56,7 @@ const structured = [
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    {verification && <meta name="google-site-verification" content={verification} />}
     <link rel="icon" href={link("favicon.svg")} type="image/svg+xml" />
     <link rel="sitemap" href={link("sitemap-index.xml")} />
     <meta name="theme-color" content="#0f766e" />

@@ -10,11 +10,14 @@ export function getStaticPaths() {
 
 const { doc } = Astro.props as { doc: DocInfo };
 const sample = demo.find((s) => s.id === doc.demo);
-const related = DOCUMENTS.filter((d) => d.group === doc.group && d.slug !== doc.slug).slice(0, 3);
-const others = related.length ? related : DOCUMENTS.filter((d) => d.slug !== doc.slug).slice(0, 3);
+// Always three related pages: same category first, then the next documents in the list.
+const sameGroup = DOCUMENTS.filter((d) => d.group === doc.group && d.slug !== doc.slug);
+const rest = DOCUMENTS.filter((d) => d.group !== doc.group);
+const start = rest.findIndex((d) => DOCUMENTS.indexOf(d) > DOCUMENTS.indexOf(doc));
+const others = [...sameGroup, ...rest.slice(Math.max(start, 0)), ...rest].slice(0, 3);
 const path = `documents/${doc.slug}/`;
 const url = new URL(link(path), Astro.site ?? SITE.url).href;
-const jsonLd = [
+const jsonLd: object[] = [
   {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -25,6 +28,22 @@ const jsonLd = [
     ],
   },
 ];
+const faqs = [
+  ...(doc.faq ?? []),
+  {
+    q: `Can I send a phone photo of a ${doc.name.toLowerCase()}?`,
+    a: "Yes. Send a JPEG, PNG, WebP, TIFF, BMP or PDF up to 10 MB. Tilted and low-resolution photos are handled; if an image is too unclear, the response is flagged for review and says why.",
+  },
+  {
+    q: `Do you store the ${doc.name.toLowerCase()} after reading it?`,
+    a: "No. On the extract API the document is processed in memory and dropped. For background jobs it is kept encrypted only until processed, and results are erased after 24 hours.",
+  },
+];
+jsonLd.push({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+});
 const curl = `curl ${SITE.apiBase}/v1/documents:extract \\
   -H "Authorization: Bearer lo_test_..." \\
   -F file=@document.jpg \\
@@ -111,6 +130,20 @@ const curl = `curl ${SITE.apiBase}/v1/documents:extract \\
   </section>
 
   <section>
+    <div class="wrap">
+      <h2>Questions about the {doc.name.toLowerCase()} API</h2>
+      {
+        faqs.map((f) => (
+          <details>
+            <summary>{f.q}</summary>
+            <p>{f.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="soft">
     <div class="wrap">
       <h2>Related documents</h2>
       <div class="grid three">

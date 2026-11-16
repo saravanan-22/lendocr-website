@@ -6,6 +6,11 @@ export interface DocField {
   about: string;
 }
 
+export interface Faq {
+  q: string;
+  a: string;
+}
+
 export interface DocInfo {
   slug: string; // URL: /documents/<slug>/
   type: string; // document_type in the API
@@ -20,11 +25,15 @@ export interface DocInfo {
   checks: string[];
   useCases: string[];
   demo?: string; // id in demo.json
+  faq?: Faq[]; // document-specific questions (general ones are added on the page)
 }
 
 export const DOCUMENTS: DocInfo[] = [
   {
     slug: "pan-card-ocr-api",
+    faq: [
+      { q: "Does it work with both old and new PAN card designs?", a: "Yes. LendOCR reads the newer cards with Name and Father's Name labels and the older cards without labels, including when the Hindi header comes out as noise." },
+    ],
     type: "pan",
     name: "PAN card",
     group: "KYC",
@@ -51,6 +60,10 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "aadhaar-ocr-api",
+    faq: [
+      { q: "Is it allowed to read Aadhaar with OCR?", a: "Lenders may collect Aadhaar for KYC within UIDAI's rules, which require the number to be masked when stored or shown. LendOCR always returns it masked (XXXX XXXX 1234) and does not store the document." },
+      { q: "Can it read the back side with the address?", a: "Yes. Send the front, the back, or both; the response says which side was found and returns the address, pincode and S/O, D/O or W/O name from the back." },
+    ],
     type: "aadhaar",
     name: "Aadhaar card",
     group: "KYC",
@@ -78,6 +91,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "voter-id-ocr-api",
+    faq: [
+      { q: "What if the card shows age instead of date of birth?", a: "Older voter ID cards print 'Age as on' a date. LendOCR returns the age in that case, and the date of birth when it is printed." },
+    ],
     type: "voter_id",
     name: "Voter ID",
     group: "KYC",
@@ -100,6 +116,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "driving-licence-ocr-api",
+    faq: [
+      { q: "Does it check if the driving licence has expired?", a: "Yes. The non-transport validity date is compared with today and an expired licence is flagged for review." },
+    ],
     type: "driving_licence",
     name: "Driving licence",
     group: "KYC",
@@ -126,6 +145,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "passport-ocr-api",
+    faq: [
+      { q: "Why is the MRZ important?", a: "The two lines of characters at the bottom of the data page carry check digits for the passport number, date of birth and expiry. When they pass, those fields are almost certainly correct; when they fail, the passport is flagged." },
+    ],
     type: "passport",
     name: "Passport",
     group: "KYC",
@@ -147,6 +169,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "cheque-ocr-api",
+    faq: [
+      { q: "Can it read a cancelled cheque for NACH set-up?", a: "Yes. It returns the IFSC, bank name, account number, account holder and the MICR code, and reports whether 'Cancelled' is written on the cheque." },
+    ],
     type: "cheque",
     name: "Cheque",
     group: "Banking",
@@ -168,6 +193,11 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "bank-statement-analysis-api",
+    faq: [
+      { q: "Which banks' statements are supported?", a: "LendOCR reads the transaction table by its structure and checks every row against the running balance, so it is not tied to fixed templates. Digital PDFs (including password-protected ones) give the most reliable results; scans and photos are read with OCR." },
+      { q: "How does it spot an edited statement?", a: "Every row's balance must equal the previous balance plus credits minus debits. Rows that do not add up are listed in the response and the statement is flagged for review." },
+      { q: "What analysis is included?", a: "Monthly credits, debits and balances, average daily balance, salary credits, EMI and loan debits, cheque and ECS bounces, cash deposits, ATM withdrawals, charges and interest." },
+    ],
     type: "bank_statement",
     name: "Bank statement",
     h1: "Bank statement analysis API",
@@ -195,6 +225,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "electricity-bill-ocr-api",
+    faq: [
+      { q: "Which electricity boards are supported?", a: "Bills from state boards and private DISCOMs are read by their labels (consumer or service number, bill date, amount payable), so most formats work without special templates." },
+    ],
     type: "electricity_bill",
     name: "Electricity bill",
     group: "Address",
@@ -217,6 +250,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "water-bill-ocr-api",
+    faq: [
+      { q: "Is a water bill accepted as address proof?", a: "Many lenders accept recent utility bills as address proof. LendOCR extracts the name and address and flags bills older than about three months." },
+    ],
     type: "water_bill",
     name: "Water bill",
     group: "Address",
@@ -236,6 +272,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "vehicle-insurance-ocr-api",
+    faq: [
+      { q: "Does it work for both bikes and cars?", a: "Yes. It reads two-wheeler and private-car policies, reports which one it is, and whether the cover is comprehensive, third-party or own-damage." },
+    ],
     type: "motor_insurance",
     name: "Bike and car insurance",
     group: "Asset",
@@ -259,6 +298,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "itr-ocr-api",
+    faq: [
+      { q: "How do I open a password-protected ITR-V?", a: "Send the PDF with its password in the password field. For ITR-V the password is the PAN in lower case followed by the date of birth as ddmmyyyy." },
+    ],
     type: "itr_v",
     name: "ITR-V acknowledgement",
     group: "Income",
@@ -285,6 +327,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "salary-slip-ocr-api",
+    faq: [
+      { q: "What if the salary slip numbers do not add up?", a: "LendOCR checks that net pay equals gross earnings minus deductions. If it does not, the slip is flagged for review with a warning." },
+    ],
     type: "salary_slip",
     name: "Salary slip",
     group: "Income",
@@ -307,6 +352,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "gst-certificate-ocr-api",
+    faq: [
+      { q: "Does it verify the GSTIN?", a: "It validates the GSTIN's checksum, state code and the PAN inside it. Confirming the registration is active needs the GST portal, which you can check alongside." },
+    ],
     type: "gst_certificate",
     name: "GST certificate",
     group: "Business",
@@ -328,6 +376,9 @@ export const DOCUMENTS: DocInfo[] = [
   },
   {
     slug: "udyam-certificate-ocr-api",
+    faq: [
+      { q: "What does it return for MSME classification?", a: "The Udyam number, enterprise name, whether it is micro, small or medium, its major activity and the registration date." },
+    ],
     type: "udyam",
     name: "Udyam certificate",
     group: "Business",

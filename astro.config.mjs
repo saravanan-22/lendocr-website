@@ -8,6 +8,6 @@ export default defineConfig({
   site: process.env.SITE_URL ?? "https://lendocr.com",
   base: process.env.BASE_PATH ?? "/",
   trailingSlash: "always",
-  integrations: [sitemap({ filter: (page) => !page.includes("/404") })],
+  integrations: [sitemap({ filter: (page) => !page.includes("/404"), lastmod: new Date() })],
   build: { inlineStylesheets: "auto" },
 });

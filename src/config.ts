@@ -26,6 +26,7 @@ export const FOUNDER = {
 
 export const NAV = [
   { href: "documents/", label: "Documents" },
+  { href: "use-cases/", label: "Use cases" },
   { href: "developers/", label: "Developers" },
   { href: "security/", label: "Security" },
   { href: "pricing/", label: "Pricing" },

@@ -16,8 +16,13 @@ supported document, developer guide, security, pricing and contact.
 SEO built in: a unique title and description per page (within Google's display limits),
 canonical URLs, Open Graph and Twitter cards with a preview image, structured data
 (Organization, WebSite, SoftwareApplication, FAQPage, BreadcrumbList), `lang="en-IN"`,
-one `<h1>` per page, alt text on images, and a landing page for each document type,
-targeting searches such as "Aadhaar OCR API" or "bank statement analysis API".
+one `<h1>` per page, alt text on images, a landing page for each document type
+(targeting searches such as "Aadhaar OCR API" or "bank statement analysis API") with its
+own FAQ (FAQPage markup), a use-cases page by buyer (NBFCs, DSAs, fintechs, vehicle and
+MSME lending), breadcrumbs on every page, related-page links, and `lastmod` in the sitemap.
+
+Google Search Console: build with `PUBLIC_GOOGLE_SITE_VERIFICATION=<code>` (or set it as a
+repository variable) to add the verification meta tag.
 
 ## Run locally
 

@@ -1,0 +1,130 @@
+---
+import Base from "../layouts/Base.astro";
+import { DOCUMENTS } from "../data/documents";
+import { link, mailto } from "../config";
+
+const byType = Object.fromEntries(DOCUMENTS.map((d) => [d.type, d]));
+const cases = [
+  {
+    id: "nbfc-bank-kyc",
+    title: "KYC automation for NBFCs and banks",
+    text: "Onboard borrowers without retyping their documents. Read PAN, Aadhaar, voter ID, driving licence and passport, check every number, and send only doubtful documents to your operations team.",
+    docs: ["pan", "aadhaar", "voter_id", "driving_licence", "passport"],
+    outcome: "Faster onboarding and fewer data-entry errors in your loan system.",
+  },
+  {
+    id: "credit-underwriting",
+    title: "Income assessment and credit underwriting",
+    text: "Turn bank statements, salary slips and ITRs into numbers your credit team can use: salary, EMIs, bounces, average balance, income and tax, with checks that flag edited or inconsistent documents.",
+    docs: ["bank_statement", "salary_slip", "itr_v"],
+    outcome: "Consistent income analysis for every application, in seconds.",
+  },
+  {
+    id: "dsa-aggregators",
+    title: "DSAs and loan aggregators",
+    text: "Collect a customer's documents once, read them all in one batch call, and pass clean, validated data to each lender you work with.",
+    docs: ["pan", "aadhaar", "bank_statement", "cheque", "electricity_bill"],
+    outcome: "Complete files sent to lenders the first time.",
+  },
+  {
+    id: "fintech-apps",
+    title: "Fintech and digital lending apps",
+    text: "Let customers upload photos from their phone and fill your forms automatically. Background jobs and signed webhooks keep your app responsive for large statements.",
+    docs: ["pan", "aadhaar", "bank_statement", "salary_slip"],
+    outcome: "Shorter forms and fewer drop-offs during sign-up.",
+  },
+  {
+    id: "vehicle-loans",
+    title: "Two-wheeler and car loans",
+    text: "Read the borrower's driving licence and the vehicle's insurance policy: registration number, policy period, IDV and premium, with checks that the licence and policy are valid today.",
+    docs: ["driving_licence", "motor_insurance", "pan", "cheque"],
+    outcome: "Quicker vehicle-loan approvals with asset details captured.",
+  },
+  {
+    id: "msme-lending",
+    title: "MSME and business lending",
+    text: "Verify a business from its GST certificate and Udyam registration, and its finances from bank statements and ITRs.",
+    docs: ["gst_certificate", "udyam", "bank_statement", "itr_v"],
+    outcome: "Business KYC and classification without manual checks.",
+  },
+  {
+    id: "address-proof",
+    title: "Address verification",
+    text: "Read Aadhaar addresses and electricity or water bills, extract the pincode, and flag bills too old to accept as address proof.",
+    docs: ["aadhaar", "electricity_bill", "water_bill"],
+    outcome: "Address proof checked against your policy automatically.",
+  },
+];
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "LendOCR use cases",
+    itemListElement: cases.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.title })),
+  },
+];
+---
+
+<Base
+  title="Use Cases: KYC Automation and Loan Document Processing"
+  description="How lenders use LendOCR: KYC automation for NBFCs and banks, income assessment, DSA document collection, vehicle loans, MSME lending and address checks."
+  path="use-cases/"
+  crumb="Use cases"
+  jsonLd={jsonLd}
+>
+  <section class="page-head">
+    <div class="wrap">
+      <p class="crumbs"><a href={link()}>Home</a> / Use cases</p>
+      <h1>Use cases</h1>
+      <p class="lead">
+        Where lenders use LendOCR to replace manual data entry and checks. Every use case runs on the
+        same API and the same review flag.
+      </p>
+      <nav class="toc" aria-label="Use cases on this page">
+        {cases.map((c) => <a href={`#${c.id}`}>{c.title}</a>)}
+      </nav>
+    </div>
+  </section>
+
+  {
+    cases.map((c, i) => (
+      <section id={c.id} class={i % 2 === 0 ? "soft" : ""}>
+        <div class="wrap grid two" style="align-items:start">
+          <div>
+            <h2>{c.title}</h2>
+            <p>{c.text}</p>
+            <p><strong>Result:</strong> {c.outcome}</p>
+          </div>
+          <div class="card">
+            <h3>Documents used</h3>
+            <ul class="checks">
+              {c.docs.map((t) => (
+                <li><a href={link(`documents/${byType[t].slug}/`)}>{byType[t].name}</a></li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <section class="cta">
+    <div class="wrap">
+      <h2>Have a different workflow?</h2>
+      <p class="lead" style="margin:0 auto">Tell us the documents you collect and we will show you the output on samples.</p>
+      <div class="actions">
+        <a class="btn primary" href={mailto("Use case", "Company:\nDocuments we collect:\nVolume per month:")}>Talk to us</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1.25rem;
+    font-size: 0.95rem;
+  }
+</style>
